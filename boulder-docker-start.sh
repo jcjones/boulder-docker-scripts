@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Pass a tag as arg1 to run that tag instead of latest.
 TAG="latest"
@@ -14,7 +14,7 @@ fi
 # BASE_URL="https://example.com" ; export BASE_URL
 #
 if [ -r config ] ; then
- . config
+ CONFIG_PARAM="--env-file config"
 fi
 
 # The CFSSL Docker image uses golang HEAD from 2015-02-17, which has various cryptographic improvements required by CFSSL.
@@ -30,6 +30,7 @@ docker rm boulder 2>&1 >/dev/null
 docker run --name boulder -d \
   --link cfssl:cfssl \
   -p 4000:4000 \
+  ${CONFIG_PARAM} \
   quay.io/letsencrypt/boulder:${TAG} \
   --cfssl "cfssl:22299" \
   monolithic
