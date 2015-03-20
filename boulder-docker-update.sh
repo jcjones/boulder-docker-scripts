@@ -1,8 +1,11 @@
 #!/bin/sh
 
-# Update from the Docker repo
-sudo docker pull quay.io/letsencrypt/boulder:latest
-sudo docker pull quay.io/jcjones/cfssl:latest
+# Pass a tag as arg1 to run that tag instead of latest.
+TAG="latest"
+if [ $# -gt 0 ] ; then
+  TAG="$1"
+fi
 
-sudo docker stop cfssl
-sudo docker stop boulder
+# Update from the Docker repo
+sudo docker pull quay.io/letsencrypt/boulder:${TAG}
+sudo docker pull quay.io/jcjones/cfssl:${TAG}
