@@ -7,11 +7,10 @@ if [ $# -gt 0 ] ; then
 fi
 
 # If you want to set some env variables for your site, you can use
-# a file called "config" and export them.
-# Example:
+# a file called "config" to insert them into Docker.
 #
 # #config
-# BASE_URL="https://example.com" ; export BASE_URL
+# BASE_URL="https://example.com"
 #
 if [ -r config ] ; then
  CONFIG_PARAM="--env-file config"
