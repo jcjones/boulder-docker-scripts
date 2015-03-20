@@ -6,6 +6,17 @@ if [ $# -gt 0 ] ; then
   TAG="$1"
 fi
 
+# If you want to set some env variables for your site, you can use
+# a file called "config" and export them.
+# Example:
+#
+# #config
+# BASE_URL="https://example.com" ; export BASE_URL
+#
+if [ -r config ] ; then
+ . config
+fi
+
 # The CFSSL Docker image uses golang HEAD from 2015-02-17, which has various cryptographic improvements required by CFSSL.
 docker rm cfssl 2>&1 >/dev/null
 docker run --name cfssl -d \
