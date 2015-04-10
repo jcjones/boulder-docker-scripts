@@ -1,0 +1,26 @@
+{
+  "syslog": {
+    "network": "udp",
+    "server": "localhost:514",
+    "tag": "boulder"
+  },
+
+  "wfe": {
+    "baseURL": "http://localhost:4000",
+    "listenAddress": "0.0.0.0:4000"
+  },
+
+  "ca": {
+    "server": "cfssl:22299",
+    "authKey": "12345678",
+    "profile": "ee",
+    "TestMode": true,
+    "dbDriver": "sqlite3",
+    "dbName": ":memory:"
+  },
+
+  "sa": {
+    "dbDriver": "sqlite3",
+    "dbName": ":memory:"
+  }
+}
