@@ -5,23 +5,22 @@ ABSPATH=$(cd "$(dirname "$0")"; pwd)
 CFSSL_DIR=${ABSPATH}/cfssl
 BOULDER_CONFIG=${ABSPATH}/boulder-config.json
 
-# Load overrides from /etc/sysconfig/boulder if it exists
-if [ -r "/etc/sysconfig/boulder" ] ; then
-  echo "[?] Loading overrides from /etc/sysconfig/boulder"
-  source /etc/sysconfig/boulder
-else
-  echo "[?] /etc/sysconfig/boulder does not exist; skipping"
-fi
-
-if [ -r "${ABSPATH}/boulder.config" ] ; then
-  echo "[?] Loading overrides from ${ABSPATH}/boulder.config"
-  source ${ABSPATH}/boulder.config
-else
-  echo "[?] ${ABSPATH}/boulder.config does not exist; skipping"
-fi
-
-
 confCheck() {
+  # Load overrides from /etc/sysconfig/boulder if it exists
+  if [ -r "/etc/sysconfig/boulder" ] ; then
+    echo "[?] Loading overrides from /etc/sysconfig/boulder"
+    source /etc/sysconfig/boulder
+  else
+    echo "[?] /etc/sysconfig/boulder does not exist; skipping"
+  fi
+
+  if [ -r "${ABSPATH}/boulder.config" ] ; then
+    echo "[?] Loading overrides from ${ABSPATH}/boulder.config"
+    source ${ABSPATH}/boulder.config
+  else
+    echo "[?] ${ABSPATH}/boulder.config does not exist; skipping"
+  fi
+
   if ! [ -r ${BOULDER_CONFIG} ] ; then
     echo "[!] Could not find Boulder config at ${BOULDER_CONFIG}; does it exist?"
     exit 1
@@ -104,6 +103,9 @@ stop() {
 testOneshot() {
   echo "[-] Creating one-shot config and not publishing the TCP port..."
   echo "[-] Control c to exit"
+
+  local bConfDir=$(dirname ${BOULDER_CONFIG})
+  local bConfFile=$(basename ${BOULDER_CONFIG})
 
   docker run --rm=true \
     --link cfssl:cfssl -v \
