@@ -5,14 +5,29 @@ ABSPATH=$(cd "$(dirname "$0")"; pwd)
 CFSSL_DIR=${ABSPATH}/cfssl
 BOULDER_CONFIG=${ABSPATH}/boulder-config.json
 
+# Load overrides from /etc/sysconfig/boulder if it exists
+if [ -r "/etc/sysconfig/boulder" ] ; then
+  echo "[?] Loading overrides from /etc/sysconfig/boulder"
+  source /etc/sysconfig/boulder
+else
+  echo "[?] /etc/sysconfig/boulder does not exist; skipping"
+fi
+
+if [ -r "${ABSPATH}/boulder.config" ] ; then
+  echo "[?] Loading overrides from ${ABSPATH}/boulder.config"
+  source ${ABSPATH}/boulder.config
+else
+  echo "[?] ${ABSPATH}/boulder.config does not exist; skipping"
+fi
+
 
 confCheck() {
   if ! [ -r ${BOULDER_CONFIG} ] ; then
-    echo "Could not find Boulder config at ${BOULDER_CONFIG}; does it exist?"
+    echo "[!] Could not find Boulder config at ${BOULDER_CONFIG}; does it exist?"
     exit 1
   fi
   if ! [ -d ${CFSSL_DIR} ] ; then
-    echo "Could not open CFSSL directory at ${CFSSL_DIR}; shall I create it and some keys? [Y/n]"
+    echo "[!] Could not open CFSSL directory at ${CFSSL_DIR}; shall I create it and some keys? [Y/n]"
     read x
     if [ "${x}" == "y" ] || [ "${x}" == "Y" ] ; then
       mkdir -p ${CFSSL_DIR} || exit 2
@@ -47,7 +62,7 @@ start() {
       quay.io/jcjones/cfssl:${CFSSL_TAG} \
       serve -port=22299
   else
-    echo "CFSSL already running..."
+    echo "[-] CFSSL already running..."
   fi
 
   if ! running boulder; then
@@ -60,35 +75,35 @@ start() {
       quay.io/letsencrypt/boulder:${BOULDER_TAG} \
       boulder --config /boulder/${bConfFile}
   else
-    echo "Boulder already running..."
+    echo "[-] Boulder already running..."
   fi
 }
 
 status() {
   if running boulder; then
-    echo "Boulder is running"
+    echo "[-] Boulder is running"
   else
-    echo "Boulder is not running"
+    echo "[-] Boulder is not running"
   fi
 
   if running cfssl; then
-    echo "CFSSL is running"
+    echo "[-] CFSSL is running"
   else
-    echo "CFSSL is not running"
+    echo "[-] CFSSL is not running"
   fi
 
 }
 
 stop() {
-  echo "Stopping..."
+  echo "[-] Stopping..."
 
   docker stop boulder
   docker stop cfssl
 }
 
 testOneshot() {
-  echo "Creating one-shot config and not publishing the TCP port..."
-  echo "Control c to exit"
+  echo "[-] Creating one-shot config and not publishing the TCP port..."
+  echo "[-] Control c to exit"
 
   docker run --rm=true \
     --link cfssl:cfssl -v \
@@ -98,7 +113,7 @@ testOneshot() {
 }
 
 update() {
-  echo "Updating..."
+  echo "[-] Updating..."
 
   docker pull quay.io/letsencrypt/boulder:${BOULDER_TAG}
   docker pull quay.io/jcjones/cfssl:${CFSSL_TAG}
