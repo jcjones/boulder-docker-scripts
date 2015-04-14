@@ -2,6 +2,7 @@
 CFSSL_TAG=latest
 BOULDER_TAG=latest
 ABSPATH=$(cd "$(dirname "$0")"; pwd)
+CA_CNF=${ABSPATH}/ca.cnf
 CFSSL_DIR=${ABSPATH}/cfssl
 BOULDER_CONFIG=${ABSPATH}/boulder-config.json
 
@@ -31,7 +32,7 @@ confCheck() {
     if [ "${x}" == "y" ] || [ "${x}" == "Y" ] ; then
       mkdir -p ${CFSSL_DIR} || exit 2
       openssl req -newkey rsa:4096 -sha512 -days 9999 -x509 -nodes \
-        -subj '/C=UN/ST=Unknown/L=Unknown/CN=Test CA' \
+        -config ${CA_CNF} \
         -keyout ${CFSSL_DIR}/ca-key.pem \
         -out ${CFSSL_DIR}/ca.pem
     else
@@ -79,13 +80,13 @@ start() {
 }
 
 status() {
-  if running boulder; then
+  if running quay.io/letsencrypt/boulder; then
     echo "[-] Boulder is running"
   else
     echo "[-] Boulder is not running"
   fi
 
-  if running cfssl; then
+  if running quay.io/jcjones/cfssl; then
     echo "[-] CFSSL is running"
   else
     echo "[-] CFSSL is not running"
