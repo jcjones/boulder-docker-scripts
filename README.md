@@ -2,9 +2,11 @@ These scripts help you to run Boulder + CFSSL in Docker in monolithic mode.
 
 Easy use:
 
-  git clone https://github.com/jcjones/boulder-docker-scripts.git boulder-docker
-  cd boulder-docker/
-  ./boulder-docker.sh start
+```shell
+git clone https://github.com/jcjones/boulder-docker-scripts.git boulder-docker
+cd boulder-docker/
+./boulder-docker.sh start
+```
 
 Note: You will need to execute `boulder-docker.sh` as a user with privileges to access Docker.
 
